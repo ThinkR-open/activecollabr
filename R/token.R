@@ -1,6 +1,6 @@
 #' Get an active collab token
 #'
-#' @importFrom httr POST
+#' @importFrom httr POST content
 #' @importFrom glue glue
 #' @importFrom jsonlite read_json
 #'

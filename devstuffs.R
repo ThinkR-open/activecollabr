@@ -20,3 +20,5 @@ usethis::use_tidy_description()
 usethis::use_mit_license("Colin Fay")
 usethis::use_code_of_conduct()
 usethis::use_readme_rmd()
+
+usethis::use_pipe()

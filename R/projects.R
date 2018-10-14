@@ -3,7 +3,7 @@
 #' @param token a token of class `collab_token`
 #'
 #' @importFrom attempt stop_if_not
-#' @importFrom httr GET
+#' @importFrom httr GET add_headers
 #' @importFrom tibble as_tibble
 #' @importFrom purrr modify_depth map_df
 #'
