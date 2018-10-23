@@ -1,7 +1,7 @@
 usethis::use_build_ignore("R/devstuffs.R")
 
 # dep
-usethis::use_package("httr")
+usethis::use_package("crul")
 usethis::use_package("glue")
 usethis::use_package("jsonlite")
 usethis::use_package("attempt")

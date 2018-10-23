@@ -1,8 +1,8 @@
 #' Get an active collab token
 #'
-#' @importFrom httr POST content
+#' @import crul
 #' @importFrom glue glue
-#' @importFrom jsonlite read_json
+#' @importFrom jsonlite fromJSON
 #'
 #' @param email your email
 #' @param password your password. If in RStudio, it opens a connexion windows.
@@ -14,35 +14,23 @@
 get_active_collab_token <- function(
   email = "colin@thinkr.fr", password = rstudioapi::askForPassword()
 ){
-  #browser()
 
-  res <- POST(
-    url = "https://accounts.activecollab.com/api/v1/external/login",
-    body = list(email = email, password = password)) %>%
-    content()
+  login <- HttpClient$new(url = "https://accounts.activecollab.com/api/v1/external/login")
+  login <- login$post(body = list(email = email, password = password))
+  int <- login$content %>% rawToChar() %>% jsonlite::fromJSON()
 
-  # This should work but doesn't
-  # POST(
-  #   url = glue("https://app.activecollab.com/{res$accounts[[1]]$name}/api/v1/issue-token-intent"),
-  #   body = list(
-  #     intent = res$user$intent,
-  #     client_name = "AppName",
-  #     client_vendor = "AppVendor"
-  #   )
-  # ) %>% content()
+  token_intent <- HttpClient$new(url = glue::glue(
+    "https://app.activecollab.com/{int$accounts$name}/api/v1/issue-token-intent"
+  ))
 
-  # Workaround
-  tmp <- tempfile(fileext = ".json")
-  on.exit(unlink(tmp))
-  system(
-    glue(
-      "curl -XPOST -d 'intent={res$user$intent}&client_name=AppName&client_vendor=AppVendor' https://app.activecollab.com/{res$accounts[[1]]$name}/api/v1/issue-token-intent > {tmp}"
-    )
-  )
+  token_intent <- token_intent$post(body = glue::glue('intent={int$user$intent}&client_name=AppName&client_vendor=AppVendor'))
+  tok <- token_intent$content %>% rawToChar() %>% jsonlite::fromJSON()
+
+
 
   structure(
-    list(token = read_json(tmp)$token,
-         app_id = res$accounts[[1]]$name),
+    list(token = tok$token,
+         app_id = int$accounts$name),
     class = "collab_token"
   )
 
